@@ -87,6 +87,12 @@ mkdir -p storage/framework/{cache,sessions,views}
 mkdir -p storage/logs
 mkdir -p bootstrap/cache
 
+# Create missing helper file directory
+mkdir -p app/Helpers
+echo "<?php
+// Currency helper functions
+" > app/Helpers/currency.php
+
 # Set permissions
 sudo chown -R www-data:www-data storage bootstrap/cache
 sudo chmod -R 775 storage bootstrap/cache
@@ -99,24 +105,15 @@ sudo chmod 664 storage/logs/laravel.log
 # Install PHP dependencies
 composer install --no-dev --optimize-autoloader
 
-# Check if resource files exist before attempting to run npm build
-if [ -f "resources/js/app.js" ] || [ -f "resources/css/app.css" ] || [ -f "resources/sass/app.scss" ]; then
-  echo "Frontend assets found, running npm build..."
-  npm install
-  npm run dev || echo "Warning: npm build had errors but continuing deployment"
-else
-  echo "No frontend assets found, skipping npm build"
-  # Create minimal webpack.mix.js if it doesn't exist
-  if [ ! -f "webpack.mix.js" ]; then
-    echo "const mix = require('laravel-mix'); module.exports = mix;" > webpack.mix.js
-  fi
-fi
-
 # Laravel commands after install
 php artisan config:clear || true
 php artisan cache:clear || true
 php artisan route:clear || true
 php artisan view:clear || true
+
+# Node.js build (optional)
+npm install
+npm run dev || echo "Warning: npm build had errors but continuing deployment"
 sudo php artisan storage:link || true
 
 # Apache VirtualHost setup (optional)
