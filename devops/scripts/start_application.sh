@@ -3,7 +3,7 @@ set -e
 
 echo "Running ApplicationStart hook..."
 
-cp -R /home/ubuntu/images/* /var/www/html/storage/app/public/
+# cp -R /home/ubuntu/images/* /var/www/html/storage/app/public/
 
 # Enable and start Apache
 sudo systemctl enable apache2
